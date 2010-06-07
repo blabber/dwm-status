@@ -14,6 +14,7 @@
 
 #include "battery.h"
 #include "clock.h"
+#include "load.h"
 
 enum {
         SLEEP = 3
@@ -24,6 +25,7 @@ main(void)
 {
         struct clock_context *clock_ctx;
         struct battery_context *battery_ctx;
+        struct load_context *load_ctx;
 
         if (setlocale(LC_ALL, "") == NULL)
                 err(EX_SOFTWARE, "setlocale()");
@@ -32,22 +34,27 @@ main(void)
                 err(EX_SOFTWARE, "clock_context_open()");
         if ((battery_ctx = battery_context_open()) == NULL)
                 err(EX_SOFTWARE, "battery_context_open()");
+        if ((load_ctx = load_context_open()) == NULL)
+                err(EX_SOFTWARE, "load_context_open()");
 
         for (;;) {
                 char           *clock;
                 char           *battery;
+                char           *load;
 
                 if ((clock = clock_str(clock_ctx)) == NULL)
                         err(EX_SOFTWARE, "clock_str");
                 if ((battery = battery_str(battery_ctx)) == NULL)
                         err(EX_SOFTWARE, "clock_str");
+                if ((load = load_str(load_ctx)) == NULL)
+                        err(EX_SOFTWARE, "load_str");
 
                 /*
                  * XXX During development this tool is printing the status to
                  * stdout. Later this will be replaced with the correspanding
                  * xsetroot call.
                  */
-                printf(" | %s | %s\n", battery, clock);
+                printf(" | %s | %s | %s\n", load, battery, clock);
 
                 sleep(SLEEP);
         }
@@ -56,6 +63,7 @@ main(void)
          * This code will never be reached (at least at the moment).
          * Nonetheless I regard it good style to implement cleanup code.
          */
+        load_context_close(load_ctx);
         battery_context_close(battery_ctx);
         clock_context_close(clock_ctx);
 

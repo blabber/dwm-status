@@ -1,5 +1,5 @@
 PROG=		dwm-status
-SRCS=		${PROG}.c clock.c battery.c
+SRCS=		${PROG}.c clock.c battery.c load.c
 
 CSTD?=		c89
 WARNS?=		6
