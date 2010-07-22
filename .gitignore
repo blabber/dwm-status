@@ -1,8 +1,8 @@
-tags
-oggfilter
-*.o
 *.[Bb][Aa][Kk]
 *.core
-*.txt
 *.gz
+*.o
+*.txt
 .depend
+dwm-status
+tags
