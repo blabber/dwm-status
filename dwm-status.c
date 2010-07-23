@@ -52,7 +52,6 @@ main(void)
                 if ((load = load_str(load_ctx)) == NULL)
                         err(EX_SOFTWARE, "load_str");
 
-
                 snprintf(command, sizeof(command), "xsetroot -name '| %s | %s | %s'", load, battery, clock);
                 if (system(command) != 0)
                         err(EX_SOFTWARE, "system(%s)", command);
