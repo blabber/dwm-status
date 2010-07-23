@@ -28,7 +28,6 @@ main(void)
         struct clock_context *clock_ctx;
         struct battery_context *battery_ctx;
         struct load_context *load_ctx;
-        char           *command;
 
         if (setlocale(LC_ALL, "") == NULL)
                 err(EX_SOFTWARE, "setlocale()");
@@ -40,10 +39,8 @@ main(void)
         if ((load_ctx = load_context_open()) == NULL)
                 err(EX_SOFTWARE, "load_context_open()");
 
-        if ((command = malloc(STRLEN)) == NULL)
-                err(EX_SOFTWARE, "malloc command");
-
         for (;;) {
+                char            command[STRLEN];
                 char           *clock;
                 char           *battery;
                 char           *load;
@@ -56,8 +53,9 @@ main(void)
                         err(EX_SOFTWARE, "load_str");
 
 
-                snprintf(command, STRLEN, "xsetroot -name '| %s | %s | %s'", load, battery, clock);
-                system(command);/* errorhandling */
+                snprintf(command, sizeof(command), "xsetroot -name '| %s | %s | %s'", load, battery, clock);
+                if (system(command) != 0)
+                        err(EX_SOFTWARE, "system(%s)", command);
 
                 sleep(SLEEP);
         }
@@ -66,7 +64,6 @@ main(void)
          * This code will never be reached (at least at the moment).
          * Nonetheless I regard it good style to implement cleanup code.
          */
-        free(command);
         load_context_close(load_ctx);
         battery_context_close(battery_ctx);
         clock_context_close(clock_ctx);

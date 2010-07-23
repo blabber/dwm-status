@@ -19,7 +19,7 @@ enum {
 };
 
 struct clock_context {
-        char           *clock_str;
+        char            clock_str[STRLEN];
 };
 
 void
@@ -27,7 +27,6 @@ clock_context_close(struct clock_context *ctx)
 {
         assert(ctx != NULL);
 
-        free(ctx->clock_str);
         free(ctx);
 }
 
@@ -38,8 +37,6 @@ clock_context_open(void)
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
                 err(EX_SOFTWARE, "malloc(%d) clock_context", sizeof(struct clock_context));
-        if ((ctx->clock_str = malloc(STRLEN)) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) clock_context->clock_str", STRLEN);
 
         return (ctx);
 }
@@ -57,7 +54,7 @@ clock_str(struct clock_context *ctx)
         if ((tm = localtime(&t)) == NULL)
                 err(EX_SOFTWARE, "localtime()");
 
-        strftime(ctx->clock_str, STRLEN, "%c", tm);
+        strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm);
 
         return (ctx->clock_str);
 }

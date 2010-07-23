@@ -19,7 +19,7 @@ enum {
 };
 
 struct load_context {
-        char           *load_str;
+        char            load_str[STRLEN];
 };
 
 struct load_context *
@@ -29,8 +29,6 @@ load_context_open()
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
                 err(EX_SOFTWARE, "malloc(%d) load_context", sizeof(*ctx));
-        if ((ctx->load_str = malloc(STRLEN)) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) load_str", STRLEN);
 
         return (ctx);
 }
@@ -40,7 +38,6 @@ load_context_close(struct load_context *ctx)
 {
         assert(ctx != NULL);
 
-        free(ctx->load_str);
         free(ctx);
 }
 
@@ -54,7 +51,7 @@ load_str(struct load_context *ctx)
         if (getloadavg(la, 3) == -1)
                 err(EX_SOFTWARE, "getloadavg");
 
-        snprintf(ctx->load_str, STRLEN, "%.2f %.2f %.2f", la[0], la[1], la[2]);
+        snprintf(ctx->load_str, sizeof(ctx->load_str), "%.2f %.2f %.2f", la[0], la[1], la[2]);
 
         return (ctx->load_str);
 }

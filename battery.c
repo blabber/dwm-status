@@ -26,7 +26,7 @@ enum {
 
 struct battery_context {
         int             fd;
-        char           *battery_str;
+        char            battery_str[STRLEN];
 };
 
 struct battery_context *
@@ -38,8 +38,6 @@ battery_context_open()
                 err(EX_SOFTWARE, "malloc(%d) battery_context", sizeof(*ctx));
         if ((ctx->fd = open(ACPIDEV, O_RDONLY)) == -1)
                 err(EX_OSFILE, "open(%s)", ACPIDEV);
-        if ((ctx->battery_str = malloc(STRLEN)) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) battery_str", STRLEN);
 
         return (ctx);
 }
@@ -51,7 +49,6 @@ battery_context_close(struct battery_context *ctx)
 
         if (close(ctx->fd) == -1)
                 err(EX_OSFILE, "close(%s)", ACPIDEV);
-        free(ctx->battery_str);
         free(ctx);
 }
 
@@ -78,7 +75,7 @@ battery_str(struct battery_context *ctx)
         else
                 state = "?";
 
-        snprintf(ctx->battery_str, STRLEN, "%d%% [%s]", battio.battinfo.cap, state);
+        snprintf(ctx->battery_str, sizeof(ctx->battery_str), "%d%% [%s]", battio.battinfo.cap, state);
 
         return (ctx->battery_str);
 }
