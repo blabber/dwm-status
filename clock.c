@@ -22,16 +22,8 @@ struct clock_context {
         char            clock_str[STRLEN];
 };
 
-void
-clock_context_close(struct clock_context *ctx)
-{
-        assert(ctx != NULL);
-
-        free(ctx);
-}
-
 struct clock_context *
-clock_context_open(void)
+clock_context_open()
 {
         struct clock_context *ctx;
 
@@ -39,6 +31,14 @@ clock_context_open(void)
                 err(EX_SOFTWARE, "malloc(%d) clock_context", sizeof(struct clock_context));
 
         return (ctx);
+}
+
+void
+clock_context_close(struct clock_context *ctx)
+{
+        assert(ctx != NULL);
+
+        free(ctx);
 }
 
 char           *
