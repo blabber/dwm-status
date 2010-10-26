@@ -33,8 +33,8 @@ const char     *NOTITLE = "unknown title";
 
 struct mpd_context {
         struct mpd_connection *conn;
-        char           *mpd_utf;
-        char           *mpd_str;
+        char            mpd_utf[STRLEN];
+        char            mpd_str[STRLEN];
         iconv_t         cd;
 };
 
@@ -45,12 +45,6 @@ mpd_context_open()
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
                 err(EX_SOFTWARE, "malloc(%d) mpd_context", sizeof(*ctx));
-
-        if ((ctx->mpd_utf = malloc(STRLEN)) == NULL)
-                err(EX_SOFTWARE, "malloc(%d)", STRLEN);
-
-        if ((ctx->mpd_str = malloc(STRLEN)) == NULL)
-                err(EX_SOFTWARE, "malloc(%d)", STRLEN);
 
         if ((ctx->cd = iconv_open("", "UTF-8")) == (iconv_t) (-1))
                 err(EX_SOFTWARE, "iconv_open");
@@ -69,9 +63,6 @@ mpd_context_close(struct mpd_context *ctx)
 {
         assert(ctx != NULL);
 
-        free(ctx->mpd_utf);
-        free(ctx->mpd_str);
-
         if (iconv_close(ctx->cd) == -1)
                 err(EX_SOFTWARE, "iconv_close");
 
@@ -88,13 +79,13 @@ mpd_str(struct mpd_context *ctx)
         struct mpd_status *status = NULL;
         const char     *artist, *title;
         char           *in, *out;
-        int             inleft, outleft;
+        size_t          inleft, outleft;
 
         assert(ctx != NULL);
 
         if ((status = mpd_run_status(ctx->conn)) == NULL) {
-                strncpy(ctx->mpd_str, NOTAVAILABLE, STRLEN - 1);
-                ctx->mpd_str[STRLEN] = '\0';
+                strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
+                ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
                 goto exit;
         }
         if (mpd_status_get_state(status) != MPD_STATE_PLAY) {
@@ -102,8 +93,8 @@ mpd_str(struct mpd_context *ctx)
                 goto exit;
         }
         if ((song = mpd_run_current_song(ctx->conn)) == NULL) {
-                strncpy(ctx->mpd_str, NOTAVAILABLE, STRLEN - 1);
-                ctx->mpd_str[STRLEN] = '\0';
+                strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
+                ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
                 goto exit;
         }
         if ((artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0)) == NULL)
@@ -112,12 +103,12 @@ mpd_str(struct mpd_context *ctx)
         if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
                 title = NOTITLE;
 
-        inleft = snprintf(ctx->mpd_utf, STRLEN, "%s - %s", artist, title);
+        inleft = snprintf(ctx->mpd_utf, sizeof(ctx->mpd_utf), "%s - %s", artist, title);
 
-        inleft = inleft < STRLEN ? inleft : STRLEN;
-        outleft = STRLEN;
-        in = ctx->mpd_utf;
-        out = ctx->mpd_str;
+        inleft = inleft < sizeof(ctx->mpd_utf) ? inleft : sizeof(ctx->mpd_utf);
+        outleft = sizeof(ctx->mpd_str);
+        in = (char *)ctx->mpd_utf;
+        out = (char *)ctx->mpd_str;
 
         while (inleft > 0) {
                 if (iconv(ctx->cd, (const char **)&in, &inleft, &out, &outleft) == (size_t) (-1)) {
