@@ -15,7 +15,7 @@
 #include "clock.h"
 
 enum {
-        STRLEN = 24
+        STRLEN = 24,
 };
 
 struct clock_context {

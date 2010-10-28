@@ -21,7 +21,7 @@
 static const char *ACPIDEV = "/dev/acpi";
 
 enum {
-        STRLEN = 32
+        STRLEN = 9,
 };
 
 struct battery_context {

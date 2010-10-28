@@ -15,7 +15,7 @@
 #include "load.h"
 
 enum {
-        STRLEN = 20
+        STRLEN = 18,
 };
 
 struct load_context {
