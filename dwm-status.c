@@ -13,6 +13,8 @@
 #include <sysexits.h>
 #include <unistd.h>
 
+#include <X11/Xlib.h>
+
 #include "battery.h"
 #include "clock.h"
 #include "load.h"
@@ -26,13 +28,23 @@ enum {
 int
 main(void)
 {
+        Display        *dpy;
+        Window          root;
         struct clock_context *clock_ctx;
         struct battery_context *battery_ctx;
         struct load_context *load_ctx;
         struct mpd_context *mpd_ctx;
+        int             screen;
 
         if (setlocale(LC_ALL, "") == NULL)
                 err(EX_SOFTWARE, "setlocale()");
+
+        if ((dpy = XOpenDisplay(NULL)) == NULL) {
+                errx(EX_SOFTWARE, "unable to open display '%s'", XDisplayName(NULL));
+        }
+        screen = DefaultScreen(dpy);
+        root = RootWindow(dpy, screen);
+
 
         if ((clock_ctx = clock_context_open()) == NULL)
                 err(EX_SOFTWARE, "clock_context_open()");
@@ -44,7 +56,7 @@ main(void)
                 err(EX_SOFTWARE, "mpd_context_open()");
 
         for (;;) {
-                char            command[STRLEN];
+                char            status[STRLEN];
                 char           *clock;
                 char           *battery;
                 char           *load;
@@ -59,10 +71,9 @@ main(void)
                 if ((mpd = mpd_str(mpd_ctx)) == NULL)
                         err(EX_SOFTWARE, "mpd_str");
 
-                snprintf(command, sizeof(command), "xsetroot -name \"%s | %s | %s | %s\"", mpd, load, battery, clock);
-
-                if (system(command) != 0)
-                        err(EX_SOFTWARE, "system(%s)", command);
+                snprintf(status, sizeof(status), "%s | %s | %s | %s", mpd, load, battery, clock);
+                XStoreName(dpy, root, status);
+                XFlush(dpy);
 
                 sleep(SLEEP);
         }
@@ -75,6 +86,7 @@ main(void)
         load_context_close(load_ctx);
         battery_context_close(battery_ctx);
         clock_context_close(clock_ctx);
+        XCloseDisplay(dpy);
 
         return (0);
 }
