@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <sysexits.h>
 
 #include <mpd/connection.h>
@@ -25,6 +26,7 @@
 
 enum {
         STRLEN = 64,
+        SLEEP = 5,
 };
 
 const char     *NOTAVAILABLE = "n/a";
@@ -36,6 +38,7 @@ struct mpd_context {
         char            mpd_utf[STRLEN];
         char            mpd_str[STRLEN];
         iconv_t         cd;
+        time_t          last;
 };
 
 struct mpd_context *
@@ -54,6 +57,10 @@ mpd_context_open()
 
         if (mpd_connection_get_error(ctx->conn) != MPD_ERROR_SUCCESS)
                 err(EX_SOFTWARE, "mpd_connection_new: %s", mpd_connection_get_error_message(ctx->conn));
+
+        ctx->mpd_str[0] = '\0';
+        ctx->mpd_utf[0] = '\0';
+        ctx->last = time(NULL) - SLEEP;
 
         return (ctx);
 }
@@ -80,8 +87,14 @@ mpd_str(struct mpd_context *ctx)
         const char     *artist, *title;
         char           *in, *out;
         size_t          inleft, outleft;
+        time_t          now;
 
         assert(ctx != NULL);
+
+        now = time(NULL);
+        if ((now - ctx->last) < SLEEP)
+                goto exit;
+        ctx->last = now;
 
         if ((status = mpd_run_status(ctx->conn)) == NULL) {
                 strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);

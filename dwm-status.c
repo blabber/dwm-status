@@ -19,7 +19,7 @@
 #include "mpd.h"
 
 enum {
-        SLEEP = 3,
+        SLEEP = 1,
         STRLEN = 128
 };
 
