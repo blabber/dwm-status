@@ -84,6 +84,8 @@ mpd_str(struct mpd_context *ctx)
         size_t          inleft, outleft;
         time_t          now;
 
+        assert(ctx != NULL);
+
         now = time(NULL);
         if ((now - ctx->last) < SLEEP)
                 goto exit;
