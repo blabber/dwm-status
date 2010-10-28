@@ -52,12 +52,7 @@ mpd_context_open()
         if ((ctx->cd = iconv_open("", "UTF-8")) == (iconv_t) (-1))
                 err(EX_SOFTWARE, "iconv_open");
 
-        if ((ctx->conn = mpd_connection_new(NULL /* host */ , 0 /* port */ , 0 /* timeout */ )) == NULL)
-                err(EX_SOFTWARE, "mpd_connection_new");
-
-        if (mpd_connection_get_error(ctx->conn) != MPD_ERROR_SUCCESS)
-                err(EX_SOFTWARE, "mpd_connection_new: %s", mpd_connection_get_error_message(ctx->conn));
-
+        ctx->conn = NULL;
         ctx->mpd_str[0] = '\0';
         ctx->mpd_utf[0] = '\0';
         ctx->last = time(NULL) - SLEEP;
@@ -73,8 +68,8 @@ mpd_context_close(struct mpd_context *ctx)
         if (iconv_close(ctx->cd) == -1)
                 err(EX_SOFTWARE, "iconv_close");
 
-        assert(ctx->conn != NULL);
-        mpd_connection_free(ctx->conn);
+        if (ctx->conn != NULL)
+                mpd_connection_free(ctx->conn);
 
         free(ctx);
 }
@@ -89,16 +84,33 @@ mpd_str(struct mpd_context *ctx)
         size_t          inleft, outleft;
         time_t          now;
 
-        assert(ctx != NULL);
-
         now = time(NULL);
         if ((now - ctx->last) < SLEEP)
                 goto exit;
         ctx->last = now;
 
+        if (ctx->conn == NULL) {
+                if ((ctx->conn = mpd_connection_new(NULL, 0, 0)) == NULL)
+                        warnx("mpd_connection_new");
+        }
+        if (ctx->conn != NULL) {
+                if (mpd_connection_get_error(ctx->conn) != MPD_ERROR_SUCCESS) {
+                        warnx("mpd_connection_new: %s", mpd_connection_get_error_message(ctx->conn));
+                        strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
+                        ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
+                        mpd_connection_free(ctx->conn);
+                        ctx->conn = NULL;
+                        goto exit;
+                }
+        }
+        assert(ctx->conn != NULL);
+
         if ((status = mpd_run_status(ctx->conn)) == NULL) {
+                warnx("mpd_run_status: %s", mpd_connection_get_error_message(ctx->conn));
                 strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
                 ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
+                mpd_connection_free(ctx->conn);
+                ctx->conn = NULL;
                 goto exit;
         }
         if (mpd_status_get_state(status) != MPD_STATE_PLAY) {
