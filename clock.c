@@ -50,9 +50,9 @@ clock_str(struct clock_context *ctx)
         assert(ctx != NULL);
 
         if (time(&t) == (time_t) - 1)
-                err(EX_SOFTWARE, "time()");
+                errx(EX_SOFTWARE, "time()");
         if ((tm = localtime(&t)) == NULL)
-                err(EX_SOFTWARE, "localtime()");
+                errx(EX_SOFTWARE, "localtime()");
 
         strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm);
 

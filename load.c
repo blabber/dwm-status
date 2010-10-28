@@ -49,7 +49,7 @@ load_str(struct load_context *ctx)
         assert(ctx != NULL);
 
         if (getloadavg(la, 3) == -1)
-                err(EX_SOFTWARE, "getloadavg");
+                errx(EX_SOFTWARE, "getloadavg");
 
         snprintf(ctx->load_str, sizeof(ctx->load_str), "%.2f %.2f %.2f", la[0], la[1], la[2]);
 

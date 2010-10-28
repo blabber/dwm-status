@@ -37,7 +37,7 @@ main(void)
         int             screen;
 
         if (setlocale(LC_ALL, "") == NULL)
-                err(EX_SOFTWARE, "setlocale()");
+                errx(EX_SOFTWARE, "setlocale()");
 
         if ((dpy = XOpenDisplay(NULL)) == NULL) {
                 errx(EX_SOFTWARE, "unable to open display '%s'", XDisplayName(NULL));
@@ -47,13 +47,13 @@ main(void)
 
 
         if ((clock_ctx = clock_context_open()) == NULL)
-                err(EX_SOFTWARE, "clock_context_open()");
+                errx(EX_SOFTWARE, "clock_context_open()");
         if ((battery_ctx = battery_context_open()) == NULL)
-                err(EX_SOFTWARE, "battery_context_open()");
+                errx(EX_SOFTWARE, "battery_context_open()");
         if ((load_ctx = load_context_open()) == NULL)
-                err(EX_SOFTWARE, "load_context_open()");
+                errx(EX_SOFTWARE, "load_context_open()");
         if ((mpd_ctx = mpd_context_open()) == NULL)
-                err(EX_SOFTWARE, "mpd_context_open()");
+                errx(EX_SOFTWARE, "mpd_context_open()");
 
         for (;;) {
                 char            status[STRLEN];

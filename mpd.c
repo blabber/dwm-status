@@ -95,7 +95,7 @@ mpd_str(struct mpd_context *ctx)
         }
         if (ctx->conn != NULL) {
                 if (mpd_connection_get_error(ctx->conn) != MPD_ERROR_SUCCESS) {
-                        warnx("mpd_connection_new: %s", mpd_connection_get_error_message(ctx->conn));
+                        warnx("mpd: %s", mpd_connection_get_error_message(ctx->conn));
                         strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
                         ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
                         mpd_connection_free(ctx->conn);
