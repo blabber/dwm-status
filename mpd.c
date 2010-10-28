@@ -92,8 +92,12 @@ mpd_str(struct mpd_context *ctx)
         ctx->last = now;
 
         if (ctx->conn == NULL) {
-                if ((ctx->conn = mpd_connection_new(NULL, 0, 0)) == NULL)
+                if ((ctx->conn = mpd_connection_new(NULL, 0, 0)) == NULL) {
                         warnx("mpd_connection_new");
+                        strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
+                        ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
+                        goto exit;
+                }
         }
         if (ctx->conn != NULL) {
                 if (mpd_connection_get_error(ctx->conn) != MPD_ERROR_SUCCESS) {
