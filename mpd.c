@@ -132,6 +132,8 @@ mpd_str(struct mpd_context *ctx)
         in = (char *)ctx->mpd_utf;
         out = (char *)ctx->mpd_str;
 
+        if (iconv(ctx->cd, NULL, NULL, &out, &outleft) == (size_t) (-1))
+                err(EX_SOFTWARE, "iconv");
         while (inleft > 0) {
                 if (iconv(ctx->cd, (const char **)&in, &inleft, &out, &outleft) == (size_t) (-1)) {
                         if (errno == E2BIG)
