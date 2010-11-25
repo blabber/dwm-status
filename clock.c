@@ -49,7 +49,7 @@ clock_str(struct clock_context *ctx)
 
         assert(ctx != NULL);
 
-        if (time(&t) == (time_t) - 1)
+        if (time(&t) == (time_t) (-1))
                 errx(EX_SOFTWARE, "time()");
         if ((tm = localtime(&t)) == NULL)
                 errx(EX_SOFTWARE, "localtime()");
