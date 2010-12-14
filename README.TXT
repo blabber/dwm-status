@@ -11,7 +11,7 @@ It displays
 It refreshes every second with the exception of the currently played song which
 is refreshed every five seconds.
 
-You may us this as is or you can use this as a boilerplate to bootstrap your
+You may use this as is or you can use this as a boilerplate to bootstrap your
 own dwm-status tool.
 
 Dependencies:
