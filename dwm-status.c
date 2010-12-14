@@ -39,9 +39,8 @@ main(void)
         if (setlocale(LC_ALL, "") == NULL)
                 errx(EX_SOFTWARE, "setlocale()");
 
-        if ((dpy = XOpenDisplay(NULL)) == NULL) {
+        if ((dpy = XOpenDisplay(NULL)) == NULL)
                 errx(EX_SOFTWARE, "unable to open display '%s'", XDisplayName(NULL));
-        }
         screen = DefaultScreen(dpy);
         root = RootWindow(dpy, screen);
 
