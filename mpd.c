@@ -127,7 +127,7 @@ mpd_str(struct mpd_context *ctx)
 
         inleft = snprintf(ctx->mpd_utf, sizeof(ctx->mpd_utf), "%s - %s", artist, title);
 
-        inleft = inleft < sizeof(ctx->mpd_utf) ? inleft : sizeof(ctx->mpd_utf);
+        inleft = inleft < sizeof(ctx->mpd_utf) ? inleft : (sizeof(ctx->mpd_utf) - 1);
         outleft = sizeof(ctx->mpd_str);
         in = (char *)ctx->mpd_utf;
         out = (char *)ctx->mpd_str;

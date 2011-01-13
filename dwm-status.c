@@ -22,7 +22,7 @@
 
 enum {
         SLEEP = 1,
-        STRLEN = 112,
+        STRLEN = 117,
 };
 
 int
