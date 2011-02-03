@@ -6,6 +6,8 @@
  *                                                              Tobias Rehbein
  */
 
+#define _POSIX_C_SOURCE 199506
+
 #include <err.h>
 #include <locale.h>
 #include <stdio.h>
@@ -19,6 +21,7 @@
 #include "clock.h"
 #include "load.h"
 #include "mpd.h"
+#include "tools.h"
 
 enum {
         SLEEP = 1,
@@ -70,7 +73,7 @@ main(void)
                 if ((mpd = mpd_str(mpd_ctx)) == NULL)
                         err(EX_SOFTWARE, "mpd_str");
 
-                snprintf(status, sizeof(status), "%s | %s | %s | %s", mpd, load, battery, clock);
+                tools_catitems(status, sizeof(status), mpd, " | ", load, " | ", battery, " | ", clock, NULL);
                 XStoreName(dpy, root, status);
                 XFlush(dpy);
 
