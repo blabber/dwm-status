@@ -22,10 +22,10 @@
 #include <mpd/status.h>
 #include <mpd/tag.h>
 
+#include "buffers.h"
 #include "mpd.h"
 
 enum {
-        STRLEN = 64,
         SLEEP = 5,
 };
 
@@ -35,8 +35,8 @@ const char     *NOTITLE = "unknown title";
 
 struct mpd_context {
         struct mpd_connection *conn;
-        char            mpd_utf[STRLEN];
-        char            mpd_str[STRLEN];
+        char            mpd_utf[MPD_BUFFLEN];
+        char            mpd_str[MPD_BUFFLEN];
         iconv_t         cd;
         time_t          last;
 };

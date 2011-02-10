@@ -17,16 +17,13 @@
 #include <sys/ioctl.h>
 
 #include "battery.h"
+#include "buffers.h"
 
 static const char *ACPIDEV = "/dev/acpi";
 
-enum {
-        STRLEN = 9,
-};
-
 struct battery_context {
         int             fd;
-        char            battery_str[STRLEN];
+        char            battery_str[BATTERY_BUFFLEN];
 };
 
 struct battery_context *

@@ -12,14 +12,11 @@
 #include <sysexits.h>
 #include <time.h>
 
+#include "buffers.h"
 #include "clock.h"
 
-enum {
-        STRLEN = 24,
-};
-
 struct clock_context {
-        char            clock_str[STRLEN];
+        char            clock_str[CLOCK_BUFFLEN];
 };
 
 struct clock_context *

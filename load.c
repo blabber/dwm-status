@@ -12,14 +12,12 @@
 #include <stdlib.h>
 #include <sysexits.h>
 
+#include "buffers.h"
 #include "load.h"
 
-enum {
-        STRLEN = 18,
-};
 
 struct load_context {
-        char            load_str[STRLEN];
+        char            load_str[LOAD_BUFFLEN];
 };
 
 struct load_context *

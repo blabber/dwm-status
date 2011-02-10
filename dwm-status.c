@@ -18,6 +18,7 @@
 #include <X11/Xlib.h>
 
 #include "battery.h"
+#include "buffers.h"
 #include "clock.h"
 #include "load.h"
 #include "mpd.h"
@@ -25,7 +26,6 @@
 
 enum {
         SLEEP = 1,
-        STRLEN = 118,
 };
 
 int
@@ -58,7 +58,7 @@ main(void)
                 errx(EX_SOFTWARE, "mpd_context_open()");
 
         for (;;) {
-                char            status[STRLEN];
+                char            status[STATUS_BUFFLEN];
                 char           *clock;
                 char           *battery;
                 char           *load;
