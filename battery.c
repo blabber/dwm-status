@@ -6,6 +6,8 @@
  *                                                              Tobias Rehbein
  */
 
+#define _POSIX_C_SOURCE 199506
+
 #include <assert.h>
 #include <err.h>
 #include <fcntl.h>
@@ -18,6 +20,7 @@
 
 #include "battery.h"
 #include "buffers.h"
+#include "tools.h"
 
 static const char *ACPIDEV = "/dev/acpi";
 
@@ -54,6 +57,9 @@ battery_str(struct battery_context *ctx)
 {
         union acpi_battery_ioctl_arg battio;
         const char     *state;
+        char            cap[3 + 1];     /* capacity is a percentage so the
+                                         * string representation will be at
+                                         * most three character long */
 
         assert(ctx != NULL);
 
@@ -72,7 +78,8 @@ battery_str(struct battery_context *ctx)
         else
                 state = "?";
 
-        snprintf(ctx->battery_str, sizeof(ctx->battery_str), "%d%% [%s]", battio.battinfo.cap, state);
+        sprintf(cap, "%d", battio.battinfo.cap);
+        tools_catitems(ctx->battery_str, sizeof(ctx->battery_str), cap, "% [", state, "]", NULL);
 
         return (ctx->battery_str);
 }
