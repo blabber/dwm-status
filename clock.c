@@ -6,6 +6,8 @@
  *                                                              Tobias Rehbein
  */
 
+#define _POSIX_C_SOURCE 199506
+
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
@@ -51,7 +53,8 @@ clock_str(struct clock_context *ctx)
         if ((tm = localtime(&t)) == NULL)
                 errx(EX_SOFTWARE, "localtime()");
 
-        strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm);
+        if (strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm) == 0)
+                errx(EX_SOFTWARE, "strftime()");
 
         return (ctx->clock_str);
 }
