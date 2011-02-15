@@ -57,9 +57,7 @@ battery_str(struct battery_context *ctx)
 {
         union acpi_battery_ioctl_arg battio;
         const char     *state;
-        char            cap[3 + 1];     /* capacity is a percentage so the
-                                         * string representation will be at
-                                         * most three character long */
+        char            cap[4];
 
         assert(ctx != NULL);
 
@@ -78,7 +76,9 @@ battery_str(struct battery_context *ctx)
         else
                 state = "?";
 
+        assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100 && sizeof(cap) > 3);
         sprintf(cap, "%d", battio.battinfo.cap);
+
         tools_catitems(ctx->battery_str, sizeof(ctx->battery_str), cap, "% [", state, "]", NULL);
 
         return (ctx->battery_str);
