@@ -23,6 +23,9 @@ tools_catitems(char *outbuf, size_t outbuflen,...)
 
         assert(outbuf != NULL);
 
+        if (outbuflen == 0)
+                return (0);
+
         op = outbuf;
         ep = op + outbuflen - 1;
 
