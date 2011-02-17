@@ -6,19 +6,24 @@
  *                                                              Tobias Rehbein
  */
 
+#define _POSIX_C_SOURCE 199506
+
 #include <assert.h>
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sysexits.h>
 
+#include "bsd.h"
 #include "buffers.h"
 #include "load.h"
-
+#include "tools.h"
 
 struct load_context {
         char            load_str[LOAD_BUFFLEN];
 };
+
+int             loadstr(double _loadval, size_t _loadbuflen, char *_loadbuf);
 
 struct load_context *
 load_context_open()
@@ -43,13 +48,32 @@ char           *
 load_str(struct load_context *ctx)
 {
         double          la[3];
+        char            la1[6], la5[6], la15[6];
 
         assert(ctx != NULL);
 
-        if (getloadavg(la, 3) == -1)
-                errx(EX_SOFTWARE, "getloadavg");
+        if (bsd_getloadavg(la, 3) == -1)
+                errx(EX_SOFTWARE, "bsd_getloadavg");
 
-        snprintf(ctx->load_str, sizeof(ctx->load_str), "%.2f %.2f %.2f", la[0], la[1], la[2]);
+        loadstr(la[0], sizeof(la1), la1);
+        loadstr(la[1], sizeof(la5), la5);
+        loadstr(la[2], sizeof(la15), la15);
+
+        tools_catitems(ctx->load_str, sizeof(ctx->load_str), la1, " ", la5, " ", la15, NULL);
 
         return (ctx->load_str);
+}
+
+int
+loadstr(double loadval, size_t loadbuflen, char *loadbuf)
+{
+        int             c;
+
+        assert(loadval >= 0 && loadval <= 99);
+        assert(loadbuflen > 5);
+        assert(loadstr != NULL);
+
+        c = sprintf(loadbuf, "%.2f", loadval);
+
+        return (c);
 }
