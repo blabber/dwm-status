@@ -6,6 +6,8 @@
  *                                                              Tobias Rehbein
  */
 
+#define _POSIX_C_SOURCE 199506
+
 #include <assert.h>
 #include <err.h>
 #include <iconv.h>
@@ -24,6 +26,7 @@
 
 #include "buffers.h"
 #include "mpd.h"
+#include "tools.h"
 
 enum {
         SLEEP = 5,
@@ -125,7 +128,7 @@ mpd_str(struct mpd_context *ctx)
         if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
                 title = NOTITLE;
 
-        inleft = snprintf(ctx->mpd_utf, sizeof(ctx->mpd_utf), "%s - %s", artist, title);
+        inleft = tools_catitems(ctx->mpd_utf, sizeof(ctx->mpd_utf), artist, " - ", title, NULL);
 
         inleft = inleft < sizeof(ctx->mpd_utf) ? inleft : (sizeof(ctx->mpd_utf) - 1);
         outleft = sizeof(ctx->mpd_str);
