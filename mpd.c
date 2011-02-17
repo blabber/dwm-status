@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <sysexits.h>
 
 #include <mpd/connection.h>
 #include <mpd/error.h>
@@ -50,10 +49,10 @@ mpd_context_open()
         struct mpd_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) mpd_context", sizeof(*ctx));
+                err(EXIT_FAILURE, "malloc(%d) mpd_context", sizeof(*ctx));
 
         if ((ctx->cd = iconv_open("", "UTF-8")) == (iconv_t) (-1))
-                err(EX_SOFTWARE, "iconv_open");
+                err(EXIT_FAILURE, "iconv_open");
 
         ctx->conn = NULL;
         ctx->mpd_str[0] = '\0';
@@ -69,7 +68,7 @@ mpd_context_close(struct mpd_context *ctx)
         assert(ctx != NULL);
 
         if (iconv_close(ctx->cd) == -1)
-                err(EX_SOFTWARE, "iconv_close");
+                err(EXIT_FAILURE, "iconv_close");
 
         if (ctx->conn != NULL)
                 mpd_connection_free(ctx->conn);
@@ -136,7 +135,7 @@ mpd_str(struct mpd_context *ctx)
         out = (char *)ctx->mpd_str;
 
         if (iconv(ctx->cd, NULL, NULL, &out, &outleft) == (size_t) (-1))
-                err(EX_SOFTWARE, "iconv");
+                err(EXIT_FAILURE, "iconv");
         while (inleft > 0) {
                 if (iconv(ctx->cd, (const char **)&in, &inleft, &out, &outleft) == (size_t) (-1)) {
                         if (errno == E2BIG)

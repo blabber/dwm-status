@@ -12,7 +12,6 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sysexits.h>
 
 #include "bsd.h"
 #include "buffers.h"
@@ -31,7 +30,7 @@ load_context_open()
         struct load_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) load_context", sizeof(*ctx));
+                err(EXIT_FAILURE, "malloc(%d) load_context", sizeof(*ctx));
 
         return (ctx);
 }
@@ -53,7 +52,7 @@ load_str(struct load_context *ctx)
         assert(ctx != NULL);
 
         if (bsd_getloadavg(la, 3) == -1)
-                errx(EX_SOFTWARE, "bsd_getloadavg");
+                errx(EXIT_FAILURE, "bsd_getloadavg");
 
         loadstr(la[0], sizeof(la1), la1);
         loadstr(la[1], sizeof(la5), la5);

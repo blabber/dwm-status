@@ -11,7 +11,6 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
-#include <sysexits.h>
 #include <time.h>
 
 #include "buffers.h"
@@ -27,7 +26,7 @@ clock_context_open()
         struct clock_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) clock_context", sizeof(struct clock_context));
+                err(EXIT_FAILURE, "malloc(%d) clock_context", sizeof(struct clock_context));
 
         return (ctx);
 }
@@ -49,12 +48,12 @@ clock_str(struct clock_context *ctx)
         assert(ctx != NULL);
 
         if (time(&t) == (time_t) (-1))
-                errx(EX_SOFTWARE, "time()");
+                errx(EXIT_FAILURE, "time()");
         if ((tm = localtime(&t)) == NULL)
-                errx(EX_SOFTWARE, "localtime()");
+                errx(EXIT_FAILURE, "localtime()");
 
         if (strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm) == 0)
-                errx(EX_SOFTWARE, "strftime()");
+                errx(EXIT_FAILURE, "strftime()");
 
         return (ctx->clock_str);
 }

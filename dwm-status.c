@@ -12,7 +12,6 @@
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sysexits.h>
 #include <unistd.h>
 
 #include <X11/Xlib.h>
@@ -40,22 +39,22 @@ main(void)
         int             screen;
 
         if (setlocale(LC_ALL, "") == NULL)
-                errx(EX_SOFTWARE, "setlocale()");
+                errx(EXIT_FAILURE, "setlocale()");
 
         if ((dpy = XOpenDisplay(NULL)) == NULL)
-                errx(EX_SOFTWARE, "unable to open display '%s'", XDisplayName(NULL));
+                errx(EXIT_FAILURE, "unable to open display '%s'", XDisplayName(NULL));
         screen = DefaultScreen(dpy);
         root = RootWindow(dpy, screen);
 
 
         if ((clock_ctx = clock_context_open()) == NULL)
-                errx(EX_SOFTWARE, "clock_context_open()");
+                errx(EXIT_FAILURE, "clock_context_open()");
         if ((battery_ctx = battery_context_open()) == NULL)
-                errx(EX_SOFTWARE, "battery_context_open()");
+                errx(EXIT_FAILURE, "battery_context_open()");
         if ((load_ctx = load_context_open()) == NULL)
-                errx(EX_SOFTWARE, "load_context_open()");
+                errx(EXIT_FAILURE, "load_context_open()");
         if ((mpd_ctx = mpd_context_open()) == NULL)
-                errx(EX_SOFTWARE, "mpd_context_open()");
+                errx(EXIT_FAILURE, "mpd_context_open()");
 
         for (;;) {
                 char            status[STATUS_BUFFLEN];
@@ -65,13 +64,13 @@ main(void)
                 char           *mpd;
 
                 if ((clock = clock_str(clock_ctx)) == NULL)
-                        err(EX_SOFTWARE, "clock_str");
+                        err(EXIT_FAILURE, "clock_str");
                 if ((battery = battery_str(battery_ctx)) == NULL)
-                        err(EX_SOFTWARE, "clock_str");
+                        err(EXIT_FAILURE, "clock_str");
                 if ((load = load_str(load_ctx)) == NULL)
-                        err(EX_SOFTWARE, "load_str");
+                        err(EXIT_FAILURE, "load_str");
                 if ((mpd = mpd_str(mpd_ctx)) == NULL)
-                        err(EX_SOFTWARE, "mpd_str");
+                        err(EXIT_FAILURE, "mpd_str");
 
                 tools_catitems(status, sizeof(status), mpd, " | ", load, " | ", battery, " | ", clock, NULL);
                 XStoreName(dpy, root, status);

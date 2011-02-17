@@ -13,7 +13,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sysexits.h>
 #include <unistd.h>
 #include <dev/acpica/acpiio.h>
 #include <sys/ioctl.h>
@@ -35,9 +34,9 @@ battery_context_open()
         struct battery_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EX_SOFTWARE, "malloc(%d) battery_context", sizeof(*ctx));
+                err(EXIT_FAILURE, "malloc(%d) battery_context", sizeof(*ctx));
         if ((ctx->fd = open(ACPIDEV, O_RDONLY)) == -1)
-                err(EX_OSFILE, "open(%s)", ACPIDEV);
+                err(EXIT_FAILURE, "open(%s)", ACPIDEV);
 
         return (ctx);
 }
@@ -48,7 +47,7 @@ battery_context_close(struct battery_context *ctx)
         assert(ctx != NULL);
 
         if (close(ctx->fd) == -1)
-                err(EX_OSFILE, "close(%s)", ACPIDEV);
+                err(EXIT_FAILURE, "close(%s)", ACPIDEV);
         free(ctx);
 }
 
@@ -63,7 +62,7 @@ battery_str(struct battery_context *ctx)
 
         battio.unit = ACPI_BATTERY_ALL_UNITS;
         if (ioctl(ctx->fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
-                err(EX_IOERR, "ioctl(ACPIIO_BATT_GET_BATTINFO)");
+                err(EXIT_FAILURE, "ioctl(ACPIIO_BATT_GET_BATTINFO)");
 
         if (battio.battinfo.state == 0)
                 state = "=";
