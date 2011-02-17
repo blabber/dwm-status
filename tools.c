@@ -24,7 +24,7 @@ tools_catitems(char *outbuf, size_t outbuflen,...)
         assert(outbuf != NULL);
 
         if (outbuflen == 0)
-                return (0);
+                return (-1);
 
         op = outbuf;
         ep = op + outbuflen - 1;
@@ -38,8 +38,8 @@ tools_catitems(char *outbuf, size_t outbuflen,...)
         *op = '\0';
         va_end(ap);
 
-        ccount = op - outbuf + 1;
-        assert(ccount <= outbuflen);
+        ccount = op - outbuf;
+        assert(ccount < outbuflen);
 
         return (ccount);
 }
