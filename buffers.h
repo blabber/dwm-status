@@ -8,7 +8,7 @@
 
 enum {
         BATTERY_BUFFLEN = 9,
-        CLOCK_BUFFLEN = 24,
+        CLOCK_BUFFLEN = 25,
         LOAD_BUFFLEN = 18,
         MPD_BUFFLEN = 64,
 
