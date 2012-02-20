@@ -21,12 +21,12 @@ struct clock_context {
 };
 
 struct clock_context *
-clock_context_open()
+clock_context_open(void)
 {
         struct clock_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc(%d) clock_context", sizeof(struct clock_context));
+                err(EXIT_FAILURE, "malloc clock_context");
 
         return (ctx);
 }

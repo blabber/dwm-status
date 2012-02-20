@@ -29,12 +29,12 @@ struct battery_context {
 };
 
 struct battery_context *
-battery_context_open()
+battery_context_open(void)
 {
         struct battery_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc(%d) battery_context", sizeof(*ctx));
+                err(EXIT_FAILURE, "malloc battery_context");
         if ((ctx->fd = open(ACPIDEV, O_RDONLY)) == -1)
                 err(EXIT_FAILURE, "open(%s)", ACPIDEV);
 

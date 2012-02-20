@@ -44,12 +44,12 @@ struct mpd_context {
 };
 
 struct mpd_context *
-mpd_context_open()
+mpd_context_open(void)
 {
         struct mpd_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc(%d) mpd_context", sizeof(*ctx));
+                err(EXIT_FAILURE, "malloc mpd_context");
 
         if ((ctx->cd = iconv_open("", "UTF-8")) == (iconv_t) (-1))
                 err(EXIT_FAILURE, "iconv_open");

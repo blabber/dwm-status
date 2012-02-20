@@ -25,12 +25,12 @@ struct load_context {
 int             loadstr(double _loadval, size_t _loadbuflen, char *_loadbuf);
 
 struct load_context *
-load_context_open()
+load_context_open(void)
 {
         struct load_context *ctx;
 
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc(%d) load_context", sizeof(*ctx));
+                err(EXIT_FAILURE, "malloc load_context");
 
         return (ctx);
 }
