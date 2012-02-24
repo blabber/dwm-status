@@ -31,9 +31,9 @@ enum {
         SLEEP = 5,
 };
 
-static const char     *NOTAVAILABLE = "n/a";
-static const char     *NOARTIST = "unknown artist";
-static const char     *NOTITLE = "unknown title";
+static const char *NOTAVAILABLE = "n/a";
+static const char *NOARTIST = "unknown artist";
+static const char *NOTITLE = "unknown title";
 
 struct mpd_context {
         struct mpd_connection *conn;
