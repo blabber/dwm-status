@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <dev/acpica/acpiio.h>
 #include <sys/ioctl.h>
@@ -22,6 +23,7 @@
 #include "tools.h"
 
 static const char *ACPIDEV = "/dev/acpi";
+static const char *NOTAVAILABLE = "n/a";
 
 struct battery_context {
         int             fd;
@@ -64,6 +66,12 @@ battery_str(struct battery_context *ctx)
         if (ioctl(ctx->fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
                 err(EXIT_FAILURE, "ioctl(ACPIIO_BATT_GET_BATTINFO)");
 
+        if (battio.battinfo.cap == -1) {
+                strncpy(ctx->battery_str, NOTAVAILABLE, sizeof(ctx->battery_str) - 1);
+                ctx->battery_str[sizeof(ctx->battery_str)] = '\0';
+                goto exit;
+        }
+
         if (battio.battinfo.state == 0)
                 state = "=";
         else if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
@@ -80,5 +88,6 @@ battery_str(struct battery_context *ctx)
 
         tools_catitems(ctx->battery_str, sizeof(ctx->battery_str), cap, "% [", state, "]", NULL);
 
+exit:
         return (ctx->battery_str);
 }
