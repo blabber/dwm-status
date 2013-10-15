@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <err.h>
+#include <errno.h>
 #include <iconv.h>
 #include <stdio.h>
 #include <stdlib.h>
