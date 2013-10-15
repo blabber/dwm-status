@@ -68,10 +68,9 @@ battery_str(struct battery_context *ctx)
 
         if (battio.battinfo.cap == -1) {
                 strncpy(ctx->battery_str, NOTAVAILABLE, sizeof(ctx->battery_str) - 1);
-                ctx->battery_str[sizeof(ctx->battery_str)] = '\0';
+                ctx->battery_str[sizeof(ctx->battery_str) - 1] = '\0';
                 goto exit;
         }
-
         if (battio.battinfo.state == 0)
                 state = "=";
         else if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
