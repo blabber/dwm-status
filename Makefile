@@ -6,12 +6,11 @@ WARNS?=		6
 
 CFLAGS+=	-I/usr/local/include/
 LDFLAGS+=	-L/usr/local/lib
-LDADD+=		-lmpdclient -lX11 ${ICONV_LIB}
+LDADD+=		-lmpdclient -lX11 -liconv
 
 CLEANFILES=	*.[Bb][Aa][Kk] *.core
 CTAGS=		ctags
 
-
-NO_MAN=		yes
+MK_MAN=		no
 
 .include <bsd.prog.mk>

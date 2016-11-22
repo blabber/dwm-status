@@ -138,7 +138,7 @@ mpd_str(struct mpd_context *ctx)
         if (iconv(ctx->cd, NULL, NULL, &out, &outleft) == (size_t) (-1))
                 err(EXIT_FAILURE, "iconv");
         while (inleft > 0) {
-                if (iconv(ctx->cd, (const char **)&in, &inleft, &out, &outleft) == (size_t) (-1)) {
+                if (iconv(ctx->cd, (char **)&in, &inleft, &out, &outleft) == (size_t) (-1)) {
                         if (errno == E2BIG)
                                 break;
                 }
