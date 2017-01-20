@@ -17,7 +17,6 @@ own dwm-status tool.
 Dependencies:
 
  - a POSIX system
- - libiconv
  - Xlib
  - libmpdclient
 

@@ -6,7 +6,7 @@ WARNS?=		6
 
 CFLAGS+=	-I/usr/local/include/
 LDFLAGS+=	-L/usr/local/lib
-LDADD+=		-lmpdclient -lX11 -liconv
+LDADD+=		-lmpdclient -lX11
 
 CLEANFILES=	*.[Bb][Aa][Kk] *.core
 CTAGS=		ctags

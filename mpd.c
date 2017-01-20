@@ -11,7 +11,6 @@
 #include <assert.h>
 #include <err.h>
 #include <errno.h>
-#include <iconv.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,9 +37,7 @@ static const char *NOTITLE = "unknown title";
 
 struct mpd_context {
         struct mpd_connection *conn;
-        char            mpd_utf[MPD_BUFFLEN];
         char            mpd_str[MPD_BUFFLEN];
-        iconv_t         cd;
         time_t          last;
 };
 
@@ -52,12 +49,8 @@ mpd_context_open(void)
         if ((ctx = malloc(sizeof(*ctx))) == NULL)
                 err(EXIT_FAILURE, "malloc mpd_context");
 
-        if ((ctx->cd = iconv_open("", "UTF-8")) == (iconv_t) (-1))
-                err(EXIT_FAILURE, "iconv_open");
-
         ctx->conn = NULL;
         ctx->mpd_str[0] = '\0';
-        ctx->mpd_utf[0] = '\0';
         ctx->last = time(NULL) - SLEEP;
 
         return (ctx);
@@ -67,9 +60,6 @@ void
 mpd_context_close(struct mpd_context *ctx)
 {
         assert(ctx != NULL);
-
-        if (iconv_close(ctx->cd) == -1)
-                err(EXIT_FAILURE, "iconv_close");
 
         if (ctx->conn != NULL)
                 mpd_connection_free(ctx->conn);
@@ -83,8 +73,6 @@ mpd_str(struct mpd_context *ctx)
         struct mpd_song *song = NULL;
         struct mpd_status *status = NULL;
         const char     *artist, *title;
-        char           *in, *out;
-        size_t          inleft, outleft;
         time_t          now;
 
         assert(ctx != NULL);
@@ -97,8 +85,6 @@ mpd_str(struct mpd_context *ctx)
         if (ctx->conn == NULL) {
                 if ((ctx->conn = mpd_connection_new(NULL, 0, 0)) == NULL) {
                         warnx("mpd_connection_new");
-                        strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
-                        ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
                         goto exit;
                 }
         }
@@ -128,22 +114,7 @@ mpd_str(struct mpd_context *ctx)
         if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
                 title = NOTITLE;
 
-        inleft = tools_catitems(ctx->mpd_utf, sizeof(ctx->mpd_utf), artist, " - ", title, NULL);
-
-        inleft = inleft < sizeof(ctx->mpd_utf) ? inleft : (sizeof(ctx->mpd_utf) - 1);
-        outleft = sizeof(ctx->mpd_str);
-        in = (char *)ctx->mpd_utf;
-        out = (char *)ctx->mpd_str;
-
-        if (iconv(ctx->cd, NULL, NULL, &out, &outleft) == (size_t) (-1))
-                err(EXIT_FAILURE, "iconv");
-        while (inleft > 0) {
-                if (iconv(ctx->cd, (char **)&in, &inleft, &out, &outleft) == (size_t) (-1)) {
-                        if (errno == E2BIG)
-                                break;
-                }
-        }
-        *out = '\0';
+        tools_catitems(ctx->mpd_str, sizeof(ctx->mpd_str), artist, " - ", title, NULL);
 
 exit:
         if (song != NULL)
