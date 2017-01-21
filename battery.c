@@ -85,7 +85,9 @@ battery_str(struct battery_context *ctx)
         assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100 && sizeof(cap) > 3);
         sprintf(cap, "%d", battio.battinfo.cap);
 
-        tools_catitems(ctx->battery_str, sizeof(ctx->battery_str), cap, "% [", state, "]", NULL);
+        if (tools_catitems(ctx->battery_str, sizeof(ctx->battery_str),
+	    cap, "% [", state, "]", NULL) == -1)
+		errx(EXIT_FAILURE, "tools_catitems");
 
 exit:
         return (ctx->battery_str);

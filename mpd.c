@@ -114,7 +114,9 @@ mpd_str(struct mpd_context *ctx)
         if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
                 title = NOTITLE;
 
-        tools_catitems(ctx->mpd_str, sizeof(ctx->mpd_str), artist, " - ", title, NULL);
+        if (tools_catitems(ctx->mpd_str, sizeof(ctx->mpd_str),
+	    artist, " - ", title, NULL) == -1)
+		errx(EXIT_FAILURE, "tools_catitems");
 
 exit:
         if (song != NULL)

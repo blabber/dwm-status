@@ -58,7 +58,9 @@ load_str(struct load_context *ctx)
         loadstr(la[1], sizeof(la5), la5);
         loadstr(la[2], sizeof(la15), la15);
 
-        tools_catitems(ctx->load_str, sizeof(ctx->load_str), la1, " ", la5, " ", la15, NULL);
+        if (tools_catitems(ctx->load_str, sizeof(ctx->load_str),
+	    la1, " ", la5, " ", la15, NULL) == -1)
+		errx(EXIT_FAILURE, "tools_catitems");
 
         return (ctx->load_str);
 }

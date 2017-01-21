@@ -72,7 +72,9 @@ main(void)
                 if ((mpd = mpd_str(mpd_ctx)) == NULL)
                         err(EXIT_FAILURE, "mpd_str");
 
-                tools_catitems(status, sizeof(status), mpd, " | ", load, " | ", battery, " | ", clock, NULL);
+                if (tools_catitems(status, sizeof(status),
+		    mpd, " | ", load, " | ", battery, " | ", clock, NULL) == -1)
+			errx(EXIT_FAILURE, "tools_Catitems()");
                 XStoreName(dpy, root, status);
                 XFlush(dpy);
 
