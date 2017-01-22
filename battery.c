@@ -26,69 +26,70 @@ static const char *ACPIDEV = "/dev/acpi";
 static const char *NOTAVAILABLE = "n/a";
 
 struct battery_context {
-        int             fd;
-        char            battery_str[BATTERY_BUFFLEN];
+	int	fd;
+	char	battery_str[BATTERY_BUFFLEN];
 };
 
 struct battery_context *
 battery_context_open(void)
 {
-        struct battery_context *ctx;
+	struct battery_context *ctx;
 
-        if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc battery_context");
-        if ((ctx->fd = open(ACPIDEV, O_RDONLY)) == -1)
-                err(EXIT_FAILURE, "open(%s)", ACPIDEV);
+	if ((ctx = malloc(sizeof(*ctx))) == NULL)
+		err(EXIT_FAILURE, "malloc battery_context");
+	if ((ctx->fd = open(ACPIDEV, O_RDONLY)) == -1)
+		err(EXIT_FAILURE, "open(%s)", ACPIDEV);
 
-        return (ctx);
+	return (ctx);
 }
 
 void
 battery_context_close(struct battery_context *ctx)
 {
-        assert(ctx != NULL);
+	assert(ctx != NULL);
 
-        if (close(ctx->fd) == -1)
-                err(EXIT_FAILURE, "close(%s)", ACPIDEV);
-        free(ctx);
+	if (close(ctx->fd) == -1)
+		err(EXIT_FAILURE, "close(%s)", ACPIDEV);
+	free(ctx);
 }
 
-char           *
+char *
 battery_str(struct battery_context *ctx)
 {
-        union acpi_battery_ioctl_arg battio;
-        const char     *state;
-        char            cap[4];
+	union acpi_battery_ioctl_arg	 battio;
+	const char			*state;
+	char				 cap[4];
 
-        assert(ctx != NULL);
+	assert(ctx != NULL);
 
-        battio.unit = ACPI_BATTERY_ALL_UNITS;
-        if (ioctl(ctx->fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
-                err(EXIT_FAILURE, "ioctl(ACPIIO_BATT_GET_BATTINFO)");
+	battio.unit = ACPI_BATTERY_ALL_UNITS;
+	if (ioctl(ctx->fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
+		err(EXIT_FAILURE, "ioctl(ACPIIO_BATT_GET_BATTINFO)");
 
-        if (battio.battinfo.cap == -1) {
-                strncpy(ctx->battery_str, NOTAVAILABLE, sizeof(ctx->battery_str) - 1);
-                ctx->battery_str[sizeof(ctx->battery_str) - 1] = '\0';
-                goto exit;
-        }
-        if (battio.battinfo.state == 0)
-                state = "=";
-        else if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
-                state = "!";
-        else if (battio.battinfo.state & ACPI_BATT_STAT_DISCHARG)
-                state = "-";
-        else if (battio.battinfo.state & ACPI_BATT_STAT_CHARGING)
-                state = "+";
-        else
-                state = "?";
+	if (battio.battinfo.cap == -1) {
+		strncpy(ctx->battery_str, NOTAVAILABLE, sizeof(ctx->battery_str) - 1);
+		ctx->battery_str[sizeof(ctx->battery_str) - 1] = '\0';
+		goto exit;
+	}
+	if (battio.battinfo.state == 0)
+		state = "=";
+	else if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
+		state = "!";
+	else if (battio.battinfo.state & ACPI_BATT_STAT_DISCHARG)
+		state = "-";
+	else if (battio.battinfo.state & ACPI_BATT_STAT_CHARGING)
+		state = "+";
+	else
+		state = "?";
 
-        assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100 && sizeof(cap) > 3);
-        sprintf(cap, "%d", battio.battinfo.cap);
+	assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100 &&
+	    sizeof(cap) > 3);
+	sprintf(cap, "%d", battio.battinfo.cap);
 
-        if (tools_catitems(ctx->battery_str, sizeof(ctx->battery_str),
+	if (tools_catitems(ctx->battery_str, sizeof(ctx->battery_str),
 	    cap, "% [", state, "]", NULL) == -1)
 		errx(EXIT_FAILURE, "tools_catitems");
 
 exit:
-        return (ctx->battery_str);
+	return (ctx->battery_str);
 }

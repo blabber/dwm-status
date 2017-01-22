@@ -17,29 +17,29 @@
 int
 tools_catitems(char *outbuf, size_t outbuflen,...)
 {
-        va_list         ap;
-        char           *op, *ip, *ep;
-        size_t          ccount;
+	va_list	 ap;
+	char	*op, *ip, *ep;
+	size_t	 ccount;
 
-        assert(outbuf != NULL);
+	assert(outbuf != NULL);
 
-        if (outbuflen == 0)
-                return (-1);
+	if (outbuflen == 0)
+		return (-1);
 
-        op = outbuf;
-        ep = op + outbuflen - 1;
+	op = outbuf;
+	ep = op + outbuflen - 1;
 
-        va_start(ap, outbuflen);
-        while ((ip = va_arg(ap, char *)) != NULL) {
-                while (*ip != '\0' && op < ep) {
-                        *(op++) = *(ip++);
-                }
-        }
-        *op = '\0';
-        va_end(ap);
+	va_start(ap, outbuflen);
+	while ((ip = va_arg(ap, char *)) != NULL) {
+		while (*ip != '\0' && op < ep) {
+			*(op++) = *(ip++);
+		}
+	}
+	*op = '\0';
+	va_end(ap);
 
-        ccount = op - outbuf;
-        assert(ccount < outbuflen);
+	ccount = op - outbuf;
+	assert(ccount < outbuflen);
 
-        return (ccount);
+	return (ccount);
 }

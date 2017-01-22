@@ -19,62 +19,62 @@
 #include "tools.h"
 
 struct load_context {
-        char            load_str[LOAD_BUFFLEN];
+	char	load_str[LOAD_BUFFLEN];
 };
 
-int             loadstr(double _loadval, size_t _loadbuflen, char *_loadbuf);
+static int	loadstr(double _loadval, size_t _loadbuflen, char *_loadbuf);
 
 struct load_context *
 load_context_open(void)
 {
-        struct load_context *ctx;
+	struct load_context *ctx;
 
-        if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc load_context");
+	if ((ctx = malloc(sizeof(*ctx))) == NULL)
+		err(EXIT_FAILURE, "malloc load_context");
 
-        return (ctx);
+	return (ctx);
 }
 
 void
 load_context_close(struct load_context *ctx)
 {
-        assert(ctx != NULL);
+	assert(ctx != NULL);
 
-        free(ctx);
+	free(ctx);
 }
 
-char           *
+char *
 load_str(struct load_context *ctx)
 {
-        double          la[3];
-        char            la1[6], la5[6], la15[6];
+	double	la[3];
+	char	la1[6], la5[6], la15[6];
 
-        assert(ctx != NULL);
+	assert(ctx != NULL);
 
-        if (bsd_getloadavg(la, 3) == -1)
-                errx(EXIT_FAILURE, "bsd_getloadavg");
+	if (bsd_getloadavg(la, 3) == -1)
+		errx(EXIT_FAILURE, "bsd_getloadavg");
 
-        loadstr(la[0], sizeof(la1), la1);
-        loadstr(la[1], sizeof(la5), la5);
-        loadstr(la[2], sizeof(la15), la15);
+	loadstr(la[0], sizeof(la1), la1);
+	loadstr(la[1], sizeof(la5), la5);
+	loadstr(la[2], sizeof(la15), la15);
 
-        if (tools_catitems(ctx->load_str, sizeof(ctx->load_str),
+	if (tools_catitems(ctx->load_str, sizeof(ctx->load_str),
 	    la1, " ", la5, " ", la15, NULL) == -1)
 		errx(EXIT_FAILURE, "tools_catitems");
 
-        return (ctx->load_str);
+	return (ctx->load_str);
 }
 
-int
+static int
 loadstr(double loadval, size_t loadbuflen, char *loadbuf)
 {
-        int             c;
+	int	c;
 
-        assert(loadval >= 0 && loadval <= 99);
-        assert(loadbuflen > 5);
-        assert(loadstr != NULL);
+	assert(loadval >= 0 && loadval <= 99);
+	assert(loadbuflen > 5);
+	assert(loadstr != NULL);
 
-        c = sprintf(loadbuf, "%.2f", loadval);
+	c = sprintf(loadbuf, "%.2f", loadval);
 
-        return (c);
+	return (c);
 }

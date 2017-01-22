@@ -13,6 +13,6 @@
 int
 bsd_getloadavg(double loadavg[], int nelem)
 {
-        /* getloadavg(3) is a non-standard bsdism. */
-        return getloadavg(loadavg, nelem);
+	/* getloadavg(3) is a non-standard bsdism. */
+	return getloadavg(loadavg, nelem);
 }

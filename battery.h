@@ -8,6 +8,6 @@
 
 struct battery_context;
 
-void            battery_context_close(struct battery_context *_ctx);
-struct battery_context *battery_context_open(void);
-char           *battery_str(struct battery_context *_ctx);
+void			 battery_context_close(struct battery_context *_ctx);
+struct battery_context	*battery_context_open(void);
+char			*battery_str(struct battery_context *_ctx);

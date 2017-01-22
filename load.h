@@ -8,6 +8,6 @@
 
 struct load_context;
 
-void            load_context_close(struct load_context *_ctx);
-struct load_context *load_context_open(void);
-char           *load_str(struct load_context *_ctx);
+void			 load_context_close(struct load_context *_ctx);
+struct load_context	*load_context_open(void);
+char			*load_str(struct load_context *_ctx);

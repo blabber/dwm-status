@@ -17,43 +17,43 @@
 #include "clock.h"
 
 struct clock_context {
-        char            clock_str[CLOCK_BUFFLEN];
+	char	clock_str[CLOCK_BUFFLEN];
 };
 
 struct clock_context *
 clock_context_open(void)
 {
-        struct clock_context *ctx;
+	struct clock_context *ctx;
 
-        if ((ctx = malloc(sizeof(*ctx))) == NULL)
-                err(EXIT_FAILURE, "malloc clock_context");
+	if ((ctx = malloc(sizeof(*ctx))) == NULL)
+		err(EXIT_FAILURE, "malloc clock_context");
 
-        return (ctx);
+	return (ctx);
 }
 
 void
 clock_context_close(struct clock_context *ctx)
 {
-        assert(ctx != NULL);
+	assert(ctx != NULL);
 
-        free(ctx);
+	free(ctx);
 }
 
 char           *
 clock_str(struct clock_context *ctx)
 {
-        time_t          t;
-        struct tm      *tm;
+	time_t		 t;
+	struct tm	*tm;
 
-        assert(ctx != NULL);
+	assert(ctx != NULL);
 
-        if (time(&t) == (time_t) (-1))
-                errx(EXIT_FAILURE, "time()");
-        if ((tm = localtime(&t)) == NULL)
-                errx(EXIT_FAILURE, "localtime()");
+	if (time(&t) == (time_t) (-1))
+		errx(EXIT_FAILURE, "time()");
+	if ((tm = localtime(&t)) == NULL)
+		errx(EXIT_FAILURE, "localtime()");
 
-        if (strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm) == 0)
-                errx(EXIT_FAILURE, "strftime()");
+	if (strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm) == 0)
+		errx(EXIT_FAILURE, "strftime()");
 
-        return (ctx->clock_str);
+	return (ctx->clock_str);
 }

@@ -7,14 +7,15 @@
  */
 
 enum {
-        BATTERY_BUFFLEN = 9,
-        CLOCK_BUFFLEN = 26,
-        LOAD_BUFFLEN = 18,
-        MPD_BUFFLEN = 64,
+	BATTERY_BUFFLEN	=  9,
+	CLOCK_BUFFLEN	= 26,
+	LOAD_BUFFLEN	= 18,
+	MPD_BUFFLEN	= 64,
 
-        /*
-         * Sum of all buffer sizes, minus string terminators, plus space for
-         * separators, plus final string terminator
-         */
-        STATUS_BUFFLEN = BATTERY_BUFFLEN + CLOCK_BUFFLEN + LOAD_BUFFLEN + MPD_BUFFLEN - (4 * 1) + (3 * 3) + 1,
+	/*
+	 * Sum of all buffer sizes, minus string terminators, plus space for
+	 * separators, plus final string terminator
+	 */
+	STATUS_BUFFLEN = BATTERY_BUFFLEN + CLOCK_BUFFLEN + LOAD_BUFFLEN +
+	    MPD_BUFFLEN - (4 * 1) + (3 * 3) + 1,
 };

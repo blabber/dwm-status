@@ -6,4 +6,4 @@
  *                                                              Tobias Rehbein
  */
 
-int             tools_catitems(char *_outbuf, size_t _outbuflen,...);
+int	tools_catitems(char *_outbuf, size_t _outbuflen,...);

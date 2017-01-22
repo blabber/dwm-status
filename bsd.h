@@ -6,4 +6,4 @@
  *                                                              Tobias Rehbein
  */
 
-int             bsd_getloadavg(double _loadavg[], int _nelem);
+int	bsd_getloadavg(double _loadavg[], int _nelem);

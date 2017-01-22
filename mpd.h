@@ -8,6 +8,6 @@
 
 struct mpd_context;
 
-void            mpd_context_close(struct mpd_context *_ctx);
-struct mpd_context *mpd_context_open(void);
-char           *mpd_str(struct mpd_context *_ctx);
+void			 mpd_context_close(struct mpd_context *_ctx);
+struct mpd_context	*mpd_context_open(void);
+char			*mpd_str(struct mpd_context *_ctx);
