@@ -10,4 +10,4 @@ struct clock_context;
 
 void			 clock_context_close(struct clock_context *_ctx);
 struct clock_context	*clock_context_open(void);
-char			*clock_str(struct clock_context *_ctx);
+wchar_t			*clock_str(struct clock_context *_ctx);

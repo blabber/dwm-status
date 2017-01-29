@@ -6,28 +6,29 @@
  *                                                              Tobias Rehbein
  */
 
-#define _POSIX_C_SOURCE 199506
+#include <sys/ioctl.h>
 
 #include <assert.h>
 #include <err.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wchar.h>
+
 #include <dev/acpica/acpiio.h>
-#include <sys/ioctl.h>
 
 #include "battery.h"
 #include "buffers.h"
-#include "tools.h"
 
 static const char *ACPIDEV = "/dev/acpi";
-static const char *NOTAVAILABLE = "n/a";
+static const wchar_t *NOTAVAILABLE = L"n/a";
 
 struct battery_context {
 	int	fd;
-	char	battery_str[BATTERY_BUFFLEN];
+	wchar_t	battery_str[BATTERY_BUFFLEN];
 };
 
 struct battery_context *
@@ -53,12 +54,11 @@ battery_context_close(struct battery_context *ctx)
 	free(ctx);
 }
 
-char *
+wchar_t *
 battery_str(struct battery_context *ctx)
 {
-	union acpi_battery_ioctl_arg	 battio;
-	const char			*state;
-	char				 cap[4];
+	union acpi_battery_ioctl_arg	battio;
+	wchar_t				state;
 
 	assert(ctx != NULL);
 
@@ -67,28 +67,27 @@ battery_str(struct battery_context *ctx)
 		err(EXIT_FAILURE, "ioctl(ACPIIO_BATT_GET_BATTINFO)");
 
 	if (battio.battinfo.cap == -1) {
-		strncpy(ctx->battery_str, NOTAVAILABLE, sizeof(ctx->battery_str) - 1);
-		ctx->battery_str[sizeof(ctx->battery_str) - 1] = '\0';
+		wcsncpy(ctx->battery_str, NOTAVAILABLE,
+		    WCSLEN(ctx->battery_str) - 1);
+		ctx->battery_str[WCSLEN(ctx->battery_str) - 1] = '\0';
 		goto exit;
 	}
 	if (battio.battinfo.state == 0)
-		state = "=";
+		state = L'=';
 	else if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
-		state = "!";
+		state = L'!';
 	else if (battio.battinfo.state & ACPI_BATT_STAT_DISCHARG)
-		state = "-";
+		state = L'-';
 	else if (battio.battinfo.state & ACPI_BATT_STAT_CHARGING)
-		state = "+";
+		state = L'+';
 	else
-		state = "?";
+		state = L'?';
 
-	assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100 &&
-	    sizeof(cap) > 3);
-	sprintf(cap, "%d", battio.battinfo.cap);
+	assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100);
 
-	if (tools_catitems(ctx->battery_str, sizeof(ctx->battery_str),
-	    cap, "% [", state, "]", NULL) == -1)
-		errx(EXIT_FAILURE, "tools_catitems");
+	if (swprintf(ctx->battery_str, WCSLEN(ctx->battery_str), L"%d%% [%C]",
+	    battio.battinfo.cap, state) == -1)
+		errx(EXIT_FAILURE, "swprintf");
 
 exit:
 	return (ctx->battery_str);

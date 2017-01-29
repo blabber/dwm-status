@@ -1,7 +1,7 @@
 PROG=		dwm-status
-SRCS=		${PROG}.c clock.c battery.c load.c mpd.c tools.c bsd.c
+SRCS=		${PROG}.c clock.c battery.c load.c mpd.c bsd.c
 
-CSTD?=		c89
+CSTD?=		c99
 WARNS?=		6
 
 CFLAGS+=	-I/usr/local/include/

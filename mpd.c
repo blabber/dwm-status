@@ -6,15 +6,15 @@
  *                                                              Tobias Rehbein
  */
 
-#define _POSIX_C_SOURCE 199506
-
 #include <assert.h>
 #include <err.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <wchar.h>
 
 #include <mpd/connection.h>
 #include <mpd/error.h>
@@ -25,19 +25,18 @@
 
 #include "buffers.h"
 #include "mpd.h"
-#include "tools.h"
 
 enum {
 	SLEEP = 5,
 };
 
-static const char *NOTAVAILABLE = "n/a";
+static const wchar_t *NOTAVAILABLE = L"n/a";
 static const char *NOARTIST = "unknown artist";
 static const char *NOTITLE = "unknown title";
 
 struct mpd_context {
 	struct mpd_connection	*conn;
-	char			 mpd_str[MPD_BUFFLEN];
+	wchar_t			 mpd_str[MPD_BUFFLEN];
 	time_t			 last;
 };
 
@@ -67,9 +66,10 @@ mpd_context_close(struct mpd_context *ctx)
 	free(ctx);
 }
 
-char           *
+wchar_t *
 mpd_str(struct mpd_context *ctx)
 {
+	char			 mpd_mbs[MPD_BUFFLEN];
 	struct mpd_song		*song = NULL;
         struct mpd_status	*status = NULL;
         const char		*artist, *title;
@@ -92,8 +92,8 @@ mpd_str(struct mpd_context *ctx)
 
 	if ((status = mpd_run_status(ctx->conn)) == NULL) {
 		warnx("mpd_run_status: %s", mpd_connection_get_error_message(ctx->conn));
-		strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
-		ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
+		wcsncpy(ctx->mpd_str, NOTAVAILABLE, WCSLEN(ctx->mpd_str) - 1);
+		ctx->mpd_str[WCSLEN(ctx->mpd_str) - 1] = '\0';
 
 		mpd_connection_free(ctx->conn);
 		ctx->conn = NULL;
@@ -104,8 +104,8 @@ mpd_str(struct mpd_context *ctx)
 		goto exit;
 	}
 	if ((song = mpd_run_current_song(ctx->conn)) == NULL) {
-		strncpy(ctx->mpd_str, NOTAVAILABLE, sizeof(ctx->mpd_str) - 1);
-		ctx->mpd_str[sizeof(ctx->mpd_str) - 1] = '\0';
+		wcsncpy(ctx->mpd_str, NOTAVAILABLE, WCSLEN(ctx->mpd_str) - 1);
+		ctx->mpd_str[WCSLEN(ctx->mpd_str) - 1] = '\0';
 		goto exit;
 	}
 	if ((artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0)) == NULL)
@@ -114,9 +114,10 @@ mpd_str(struct mpd_context *ctx)
 	if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
 		title = NOTITLE;
 
-	if (tools_catitems(ctx->mpd_str, sizeof(ctx->mpd_str),
-	    artist, " - ", title, NULL) == -1)
-		errx(EXIT_FAILURE, "tools_catitems");
+	if (snprintf(mpd_mbs, sizeof(mpd_mbs), "%s - %s", artist, title) < 0)
+		errx(EXIT_FAILURE, "snprintf");
+	if (mbstowcs(ctx->mpd_str, mpd_mbs, WCSLEN(ctx->mpd_str)) == (size_t)-1)
+		err(EXIT_FAILURE, "mbstowcs");
 
 exit:
 	if (song != NULL)

@@ -6,13 +6,13 @@
  *                                                              Tobias Rehbein
  */
 
-#define _POSIX_C_SOURCE 199506
-
 #include <err.h>
+#include <limits.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #include <X11/Xlib.h>
 
@@ -21,7 +21,6 @@
 #include "clock.h"
 #include "load.h"
 #include "mpd.h"
-#include "tools.h"
 
 enum {
 	SLEEP = 1,
@@ -58,11 +57,12 @@ main(void)
 		errx(EXIT_FAILURE, "mpd_context_open()");
 
 	for (;;) {
-		char	 status[STATUS_BUFFLEN];
-		char	*clock;
-		char	*battery;
-		char	*load;
-		char	*mpd;
+		wchar_t	 status[STATUS_BUFFLEN];
+		char	 mbs_status[STATUS_BUFFLEN];
+		wchar_t	*mpd;
+		wchar_t	*battery;
+		wchar_t	*clock;
+		wchar_t	*load;
 
 		if ((clock = clock_str(clock_ctx)) == NULL)
 			err(EXIT_FAILURE, "clock_str");
@@ -73,11 +73,14 @@ main(void)
 		if ((mpd = mpd_str(mpd_ctx)) == NULL)
 			err(EXIT_FAILURE, "mpd_str");
 
-		if (tools_catitems(status, sizeof(status),
-		    mpd, " | ", load, " | ", battery, " | ", clock, NULL) == -1)
-			errx(EXIT_FAILURE, "tools_Catitems()");
+		if (swprintf(status, STATUS_BUFFLEN, L"%S | %S | %S | %S",
+		    mpd, load, battery, clock) == 0)
+			errx(EXIT_FAILURE, "swprintf");
 
-		XStoreName(dpy, root, status);
+		if (wcstombs(mbs_status, status, WCSLEN(status)) == (size_t)-1)
+			err(EXIT_FAILURE, "wcstombs");
+
+		XStoreName(dpy, root, mbs_status);
 		XFlush(dpy);
 
 		sleep(SLEEP);

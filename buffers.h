@@ -6,6 +6,8 @@
  *                                                              Tobias Rehbein
  */
 
+#define WCSLEN(x)	(sizeof(x)/sizeof(wchar_t))
+
 enum {
 	BATTERY_BUFFLEN	=  9,
 	CLOCK_BUFFLEN	= 26,

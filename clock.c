@@ -6,18 +6,19 @@
  *                                                              Tobias Rehbein
  */
 
-#define _POSIX_C_SOURCE 199506
-
 #include <assert.h>
 #include <err.h>
+#include <limits.h>
+#include <stdlib.h>
 #include <stdlib.h>
 #include <time.h>
+#include <wchar.h>
 
 #include "buffers.h"
 #include "clock.h"
 
 struct clock_context {
-	char	clock_str[CLOCK_BUFFLEN];
+	wchar_t	clock_str[CLOCK_BUFFLEN];
 };
 
 struct clock_context *
@@ -39,7 +40,7 @@ clock_context_close(struct clock_context *ctx)
 	free(ctx);
 }
 
-char           *
+wchar_t *
 clock_str(struct clock_context *ctx)
 {
 	time_t		 t;
@@ -52,8 +53,8 @@ clock_str(struct clock_context *ctx)
 	if ((tm = localtime(&t)) == NULL)
 		errx(EXIT_FAILURE, "localtime()");
 
-	if (strftime(ctx->clock_str, sizeof(ctx->clock_str), "%c", tm) == 0)
-		errx(EXIT_FAILURE, "strftime()");
+	if (wcsftime(ctx->clock_str, sizeof(ctx->clock_str), L"%c", tm) == 0)
+		errx(EXIT_FAILURE, "wcsftime()");
 
 	return (ctx->clock_str);
 }
