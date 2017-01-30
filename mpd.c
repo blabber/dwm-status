@@ -69,7 +69,6 @@ mpd_context_close(struct mpd_context *ctx)
 wchar_t *
 mpd_str(struct mpd_context *ctx)
 {
-	char			 mpd_mbs[MPD_BUFFLEN];
 	struct mpd_song		*song = NULL;
         struct mpd_status	*status = NULL;
         const char		*artist, *title;
@@ -114,10 +113,9 @@ mpd_str(struct mpd_context *ctx)
 	if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
 		title = NOTITLE;
 
-	if (snprintf(mpd_mbs, sizeof(mpd_mbs), "%s - %s", artist, title) < 0)
-		errx(EXIT_FAILURE, "snprintf");
-	if (mbstowcs(ctx->mpd_str, mpd_mbs, WCSLEN(ctx->mpd_str)) == (size_t)-1)
-		err(EXIT_FAILURE, "mbstowcs");
+	if (swprintf(ctx->mpd_str, WCSLEN(ctx->mpd_str), L"%s - %s",
+	    artist, title) <= 0)
+		errx(EXIT_FAILURE, "swprintf");
 
 exit:
 	if (song != NULL)

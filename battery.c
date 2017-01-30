@@ -86,7 +86,7 @@ battery_str(struct battery_context *ctx)
 	assert(battio.battinfo.cap >= 0 && battio.battinfo.cap <= 100);
 
 	if (swprintf(ctx->battery_str, WCSLEN(ctx->battery_str), L"%d%% [%C]",
-	    battio.battinfo.cap, state) == -1)
+	    battio.battinfo.cap, state) <= 0)
 		errx(EXIT_FAILURE, "swprintf");
 
 exit:

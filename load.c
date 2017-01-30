@@ -53,15 +53,15 @@ load_str(struct load_context *ctx)
 	if (bsd_getloadavg(la, 3) == -1)
 		errx(EXIT_FAILURE, "bsd_getloadavg");
 
-	if (loadstr(la[0], WCSLEN(la1), la1) == 0)
+	if (loadstr(la[0], WCSLEN(la1), la1) <= 0)
 		errx(EXIT_FAILURE, "loadstr");
-	if (loadstr(la[1], WCSLEN(la5), la5) == 0)
+	if (loadstr(la[1], WCSLEN(la5), la5) <= 0)
 		errx(EXIT_FAILURE, "loadstr");
-	if (loadstr(la[2], WCSLEN(la15), la15) == 0)
+	if (loadstr(la[2], WCSLEN(la15), la15) <= 0)
 		errx(EXIT_FAILURE, "loadstr");
 
 	if (swprintf(ctx->load_str, WCSLEN(ctx->load_str), L"%S %S %S",
-	    la1, la5, la15) == 0)
+	    la1, la5, la15) <= 0)
 		errx(EXIT_FAILURE, "swprintf");
 
 	return (ctx->load_str);

@@ -74,7 +74,7 @@ main(void)
 			err(EXIT_FAILURE, "mpd_str");
 
 		if (swprintf(status, STATUS_BUFFLEN, L"%S | %S | %S | %S",
-		    mpd, load, battery, clock) == 0)
+		    mpd, load, battery, clock) <= 0)
 			errx(EXIT_FAILURE, "swprintf");
 
 		if (wcstombs(mbs_status, status, WCSLEN(status)) == (size_t)-1)
