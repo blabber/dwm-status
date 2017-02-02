@@ -57,8 +57,7 @@ main(void)
 		errx(EXIT_FAILURE, "mpd_context_open()");
 
 	for (;;) {
-		wchar_t	 status[STATUS_BUFFLEN];
-		char	 mbs_status[STATUS_BUFFLEN];
+		char	 status[STATUS_BUFFLEN];
 		wchar_t	*mpd;
 		wchar_t	*battery;
 		wchar_t	*clock;
@@ -73,14 +72,11 @@ main(void)
 		if ((mpd = mpd_str(mpd_ctx)) == NULL)
 			err(EXIT_FAILURE, "mpd_str");
 
-		if (swprintf(status, STATUS_BUFFLEN, L"%S | %S | %S | %S",
+		if (snprintf(status, STATUS_BUFFLEN, "%S | %S | %S | %S",
 		    mpd, load, battery, clock) <= 0)
 			errx(EXIT_FAILURE, "swprintf");
 
-		if (wcstombs(mbs_status, status, WCSLEN(status)) == (size_t)-1)
-			err(EXIT_FAILURE, "wcstombs");
-
-		XStoreName(dpy, root, mbs_status);
+		XStoreName(dpy, root, status);
 		XFlush(dpy);
 
 		sleep(SLEEP);
