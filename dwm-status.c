@@ -66,7 +66,7 @@ main(void)
 		if ((clock = clock_str(clock_ctx)) == NULL)
 			err(EXIT_FAILURE, "clock_str");
 		if ((battery = battery_str(battery_ctx)) == NULL)
-			err(EXIT_FAILURE, "clock_str");
+			err(EXIT_FAILURE, "battery_str");
 		if ((load = load_str(load_ctx)) == NULL)
 			err(EXIT_FAILURE, "load_str");
 		if ((mpd = mpd_str(mpd_ctx)) == NULL)
