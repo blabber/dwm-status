@@ -82,7 +82,7 @@ main(void)
 		sleep(SLEEP);
 	}
 
- 	/*
+	/*
 	 * This code will never be reached (at least at the moment).
 	 * Nonetheless I regard it good style to implement cleanup code.
 	 */
