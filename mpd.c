@@ -31,8 +31,7 @@ enum {
 };
 
 static const wchar_t *NOTAVAILABLE = L"n/a";
-static const char *NOARTIST = "unknown artist";
-static const char *NOTITLE = "unknown title";
+static const wchar_t *UNKNOWN = L"unknown";
 
 struct mpd_context {
 	struct mpd_connection	*conn;
@@ -70,9 +69,10 @@ wchar_t *
 mpd_str(struct mpd_context *ctx)
 {
 	struct mpd_song		*song = NULL;
-        struct mpd_status	*status = NULL;
-        const char		*artist, *title;
-        time_t			 now;
+	struct mpd_status	*status = NULL;
+	const char		*artist, *title;
+	char			*artist_title;
+	time_t			 now;
 
 	assert(ctx != NULL);
 
@@ -107,15 +107,45 @@ mpd_str(struct mpd_context *ctx)
 		ctx->mpd_str[WCSLEN(ctx->mpd_str) - 1] = '\0';
 		goto exit;
 	}
+
 	if ((artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0)) == NULL)
-		artist = NOARTIST;
+		artist = NULL;
 
 	if ((title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) == NULL)
-		title = NOTITLE;
+		title = NULL;
 
-	if (swprintf(ctx->mpd_str, WCSLEN(ctx->mpd_str), L"%s - %s",
-	    artist, title) <= 0)
-		errx(EXIT_FAILURE, "swprintf");
+	if (title == NULL && artist == NULL) {
+		wcsncpy(ctx->mpd_str, UNKNOWN, WCSLEN(ctx->mpd_str) - 1);
+		ctx->mpd_str[WCSLEN(ctx->mpd_str) - 1] = '\0';
+		goto exit;
+	}
+
+	if (title != NULL && artist != NULL) {
+		if (asprintf(&artist_title, "%s - %s", artist, title) == -1)
+			errx(EXIT_FAILURE, "asprintf");
+
+		if (swprintf(ctx->mpd_str, WCSLEN(ctx->mpd_str), L"%.*s",
+		    WCSLEN(ctx->mpd_str) - 1, artist_title, title) > 0) {
+			free(artist_title);
+			goto exit;
+		}
+	}
+
+	if (artist != NULL) {
+		if (swprintf(ctx->mpd_str, WCSLEN(ctx->mpd_str), L"%.*s",
+		    WCSLEN(ctx->mpd_str) - 1, artist) > 0) {
+			goto exit;
+		}
+	}
+
+	if (title != NULL) {
+		if (swprintf(ctx->mpd_str, WCSLEN(ctx->mpd_str), L"%.*s",
+		    WCSLEN(ctx->mpd_str) - 1, title) <= 0) {
+			errx(EXIT_FAILURE, "swprintf");
+		}
+
+		goto exit;
+	}
 
 exit:
 	if (song != NULL)
